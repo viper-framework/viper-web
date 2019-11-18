@@ -390,7 +390,7 @@ class FileView(LoginRequiredMixin, TemplateView):
         # default to "default" project if none given
         project = kwargs.get('project', 'default')
         db = open_db(project)
-
+        sample_list = db.find('all')
         sha256 = kwargs.get('sha256')
         if not sha256:
             log.error("no sha256 hashed provided")
@@ -414,7 +414,6 @@ class FileView(LoginRequiredMixin, TemplateView):
                 note_list.append({'title': note.title,
                                   'body': note.body,
                                   'id': note.id})
-
         module_history = []
         analysis_list = malware_obj.analysis
         if analysis_list:
@@ -433,6 +432,7 @@ class FileView(LoginRequiredMixin, TemplateView):
                                                'parent': parent,
                                                'module_history': module_history,
                                                'project': project,
+                                               'sample_list': sample_list,
                                                'projects': get_project_list()})
 
 
@@ -776,3 +776,69 @@ class SearchFileView(LoginRequiredMixin, TemplateView):
                                                    'searched_key': key,
                                                    'searched_value': value,
                                                    'projects': get_project_list()})
+
+
+class AddParentView(LoginRequiredMixin, TemplateView):
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('This is a POST only view')
+
+    def post(self, request, *args, **kwargs):
+        print("IN FUCKING ADD PARENT VIEW")
+        child = request.POST.get('child').lower()
+        parent = request.POST.get('parent').lower()
+        project = request.POST.get('project', 'default')
+        db = open_db(project)
+
+        if not child:
+            log.error("no sha256 hashed for child provided")
+            raise Http404("no sha256 hashed for child provided")
+        if not parent:
+            log.error("no sha256 hashed for parent provided")
+            raise Http404("no sha256 hashed for parent provided")
+
+        # Open a session
+        try:
+            path = get_sample_path(child)
+            if not path:
+                raise Http404("could not retrieve file for sha256 hash: {}".format(child))
+            __sessions__.new(path)
+        except Exception as err:
+            log.error("Error: {}".format(err))
+            return HttpResponse('<span class="alert alert-danger">Invalid Submission</span>'.format())
+
+        db.add_parent(child, parent)
+
+        return redirect(reverse("file-view", kwargs={"project": project, "sha256": child}))
+
+
+class DeleteParentView(LoginRequiredMixin, TemplateView):
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('This is a POST only view')
+
+    def post(self, request, *args, **kwargs):
+        print("IN FUCKING DELETE PARENT VIEW")
+        child = request.POST.get('child').lower()
+        parent = request.POST.get('parent').lower()
+        project = request.POST.get('project', 'default')
+        db = open_db(project)
+
+        if not child:
+            log.error("no sha256 hashed for child provided")
+            raise Http404("no sha256 hashed for child provided")
+        if not parent:
+            log.error("no sha256 hashed for parent provided")
+            raise Http404("no sha256 hashed for parent provided")
+
+        # Open a session
+        try:
+            path = get_sample_path(child)
+            if not path:
+                raise Http404("could not retrieve file for sha256 hash: {}".format(child))
+            __sessions__.new(path)
+        except Exception as err:
+            log.error("Error: {}".format(err))
+            return HttpResponse('<span class="alert alert-danger">Invalid Submission</span>'.format())
+
+        db.delete_parent(child)
+
+        return redirect(reverse("file-view", kwargs={"project": project, "sha256": child}))
