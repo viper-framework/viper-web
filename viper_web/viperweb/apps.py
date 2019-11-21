@@ -5,5 +5,5 @@
 from django.apps import AppConfig
 
 
-class ViperApiConfig(AppConfig):
-    name = 'viper.web.viperapi'
+class ViperWebConfig(AppConfig):
+    name = 'viper_web.viperweb'

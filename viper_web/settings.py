@@ -10,7 +10,7 @@ import logging
 from viper.core.project import __project__
 from viper.core.config import __config__
 
-log = logging.getLogger("viper-web")
+log = logging.getLogger("viper_web")
 cfg = __config__
 
 # add base_path to python path
@@ -55,8 +55,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'bootstrapform',
-    'viper.web.viperweb',
-    'viper.web.viperapi',
+    'viper_web.viperweb',
+    'viper_web.viperapi',
     'rest_framework_swagger',  # has to come after viperapi so that we can override the template
 )
 
@@ -71,7 +71,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'viper.web.urls'
+ROOT_URLCONF = 'viper_web.urls'
 
 TEMPLATES = [
     {
@@ -112,7 +112,7 @@ FILE_UPLOAD_HANDLERS = [
 FILE_UPLOAD_TEMP_DIR = "/tmp/"
 
 
-WSGI_APPLICATION = 'viper.web.wsgi.application'
+WSGI_APPLICATION = 'viper_web.wsgi.application'
 
 
 # Database
@@ -164,7 +164,7 @@ LOGGING = {
             'propagate': True,
             'level': 'INFO',
         },
-        'viper-web': {
+        'viper_web': {
             # 'handlers': ['null'],
             'handlers': ['console'],
             'propagate': True,

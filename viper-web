@@ -11,12 +11,12 @@ import argparse
 from viper.common.out import print_info, print_warning, print_success
 from viper.core.config import __config__
 
-# log = logging.getLogger("viper-web")
+# log = logging.getLogger("viper_web")
 # Viper Global Config
 cfg = __config__
 
 # insert path and load Django settings
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "viper.web.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "viper_web.settings")
 
 import django  # noqa
 django.setup()

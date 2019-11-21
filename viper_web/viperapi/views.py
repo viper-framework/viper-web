@@ -59,7 +59,7 @@ try:
 except ImportError:
     from os import walk  # noqa
 
-log = logging.getLogger("viper-web")
+log = logging.getLogger("viper_web")
 cfg = __config__
 
 ################
