@@ -352,11 +352,9 @@ class MalwareViewSet(ViperGenericViewSet):
         return response
 
     @staticmethod
-    def _process_uploaded(db, uploaded_file_path, file_name, tag_list=None, note_title=None, note_body=None):
+    def _process_uploaded(db, uploaded_file_path, file_name, tag_list=None, note_title=None, note_body=None, parent_hash=None):
         """_process_uploaded add one uploaded file to database and to storage then remove uploaded file"""
-
         log.debug("adding: {} as {}".format(uploaded_file_path, file_name))
-
         malware = File(uploaded_file_path)
         malware.name = file_name
 
@@ -382,6 +380,17 @@ class MalwareViewSet(ViperGenericViewSet):
             if note_body and note_title:
                 db.add_note(malware.sha256, note_title, note_body)
                 log.debug("added note: \"{0}\"".format(note_title))
+
+            if parent_hash:
+                if not db.find(key='sha256', value=parent_hash):
+                    # Error
+                    log.error("Adding parent failed - not found")
+                    error = {"error": {"code": "ParentNotFound",
+                            "message": "Unable to find parent {} in the DB".format(parent_hash)}}
+                    raise ValidationError(detail=error)
+
+                db.add_parent(malware.sha256, parent_hash)
+                log.debug("added parent: {}".format(parent_hash))
 
         else:
             error = {"error": {"code": "DatabaseAddFailed",
@@ -418,6 +427,7 @@ class MalwareViewSet(ViperGenericViewSet):
         note_body = serializer.validated_data.get("note_body", None)
         uploaded_files = serializer.validated_data.get("file", None)
         uploaded_file_name = serializer.validated_data.get("file_name", None)
+        parent_hash = serializer.validated_data.get("parent_hash", None)
 
         to_process = list()
         tmp_dirs = list()
@@ -490,7 +500,7 @@ class MalwareViewSet(ViperGenericViewSet):
 
         processed = list()
         for item in to_process:
-            processed.append(self._process_uploaded(db, item[0], item[1], tag_list, note_title, note_body))  # TODO(frennkie) Error handling (e.g. duplicate hashes?!)
+            processed.append(self._process_uploaded(db, item[0], item[1], tag_list, note_title, note_body, parent_hash))  # TODO(frennkie) Error handling (e.g. duplicate hashes?!)
 
         log.debug("Tmp Dirs: {}".format(tmp_dirs))
         for item in tmp_dirs:
