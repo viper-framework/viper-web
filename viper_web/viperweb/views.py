@@ -22,6 +22,7 @@ from django.urls import reverse
 from django.http import HttpResponse, Http404
 # from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.html import escape
 from django.views.generic import TemplateView
 from django.contrib import messages
 from django.core.files.temp import NamedTemporaryFile
@@ -186,12 +187,12 @@ def print_output(output):
             for row in entry['data']['rows']:
                 return_html += '<tr>'
                 for cell in row:
-                    return_html += '<td>{0}</td>'.format(cell)
+                    return_html += '<td>{0}</td>'.format(escape(cell))
                 return_html += '</tr>'
             # Close table
             return_html += '</table>'
         else:
-            return_html += '<p>{0}</p>'.format(entry['data'])
+            return_html += '<p>{0}</p>'.format(escape(entry['data']))
     return return_html
 
 
