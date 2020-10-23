@@ -291,6 +291,7 @@ class MalwareUploadSerializer(ObjectSerializer):
     store_archive = serializers.CharField(max_length=100, required=False, label="Store Archive", help_text="store or discard archive after extract")
     note_title = serializers.CharField(max_length=100, required=False, label="Note Title", help_text="title of note to be added")
     note_body = serializers.CharField(max_length=1000, required=False, label="Note Body", help_text="body to note to be added ")
+    parent_hash = serializers.CharField(max_length=64, required=False, label="Parent hash", help_text="SHA256 of file to set as parent")
 
     # allow multiple files
     file = serializers.ListField(child=serializers.FileField(max_length=255, required=True, allow_empty_file=False))

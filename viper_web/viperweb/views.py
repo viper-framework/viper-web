@@ -54,7 +54,7 @@ try:
 except NameError:
     FileNotFoundError = IOError  # Py2
 
-log = logging.getLogger("viper-web")
+log = logging.getLogger("viper_web")
 cfg = __config__
 
 
