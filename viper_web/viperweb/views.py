@@ -708,7 +708,13 @@ class CuckooCheckOrSubmitView(LoginRequiredMixin, TemplateView):
             # Submit file data to cuckoo
             uri = '{0}{1}'.format(cfg.cuckoo.cuckoo_host, '/tasks/create/file')
             options = {'file': (file_name, file_data)}
-            cuckoo_response = requests.post(uri, files=options)
+            if cfg.cuckoo.cuckoo_modified:
+                # Setting cuckoo_modified to True in viper.conf can send to CAPE or older versions of Cuckoo
+                cuckoo_response = requests.post(uri, files=options)
+            else:
+                # Add cuckoo API key to request. 
+                auth_headers = {'Authorization': "Bearer {0}".format(cfg.cuckoo.auth_token)}
+                cuckoo_response = requests.post(uri, headers=auth_headers, files=options)
             if cuckoo_response.status_code == 200:
                 cuckoo_id = dict(cuckoo_response.json())['task_id']
                 return HttpResponse('<a href="{0}/analysis/pending/" target="_blank"> Link To Cuckoo (pending tasks)</a>'.format(cfg.cuckoo.cuckoo_web, str(cuckoo_id)))
