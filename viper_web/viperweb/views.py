@@ -449,6 +449,16 @@ class RunModuleView(LoginRequiredMixin, TemplateView):
 
         if len(file_hash) != 64:
             file_hash = False
+
+        # First check if history is requested
+        module_history = request.POST.get('moduleHistory', ' ')
+        if module_history != ' ':
+            result = Database().get_analysis(module_history)
+            module_results = print_output(json.loads(result.results))
+            html = '<p class="text-success">Result for "{0}" stored on {1}</p>'.format(result.cmd_line, result.stored_at)
+            html += str(parse_text(module_results))
+            return HttpResponse('<pre>{0}</pre>'.format(html))
+        
         # Lot of logic here to decide what command you entered.
         module_name = request.POST.get('module')
         print("Here: {}".format(module_name))
@@ -456,17 +466,11 @@ class RunModuleView(LoginRequiredMixin, TemplateView):
             return HttpResponse("<pre>Error: No Module selected!</pre>")
         module_args = request.POST.get('args')
         cmd_line = request.POST.get('cmdline')
-        module_history = request.POST.get('moduleHistory', ' ')
+        
         cmd_string = ''
         # Order of precedence
-        # moduleHistory, cmd_line, module_name
+        # cmd_line, module_name
 
-        if module_history != ' ':
-            result = Database().get_analysis(module_history)
-            module_results = print_output(json.loads(result.results))
-            html = '<p class="text-success">Result for "{0}" stored on {1}</p>'.format(result.cmd_line, result.stored_at)
-            html += str(parse_text(module_results))
-            return HttpResponse('<pre>{0}</pre>'.format(html))
         if cmd_line:
             cmd_string = cmd_line
         elif module_args:
