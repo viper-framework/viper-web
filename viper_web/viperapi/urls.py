@@ -2,7 +2,7 @@
 # This file is part of Viper - https://github.com/viper-framework/viper
 # See the file 'LICENSE' for copying permission.
 
-from django.conf.urls import include, url
+from django.urls import include, re_path
 from django.views.generic import RedirectView
 from rest_framework_nested import routers
 from rest_framework_swagger.views import get_swagger_view
@@ -35,21 +35,21 @@ schema_view = get_swagger_view(title='Viper API v3')
 
 urlpatterns = [
     # Main API route -> Redirect /api/ to /api/v3/project/
-    url(r'^$', RedirectView.as_view(pattern_name='viperapi_v3:project-list'), name='redirect-to-api-v3'),
+    re_path(r'^$', RedirectView.as_view(pattern_name='viperapi_v3:project-list'), name='redirect-to-api-v3'),
 
     # Extractors
-    url(r'^v3/extractor/$', views.ExtractorAPIView.as_view(), name="extractor-list"),
-    url(r'^v3/compressor/$', views.CompressorAPIView.as_view(), name="compressor-list"),
-    url(r'^v3/module/$', views.ModuleAPIView.as_view(), name="module-list"),
+    re_path(r'^v3/extractor/$', views.ExtractorAPIView.as_view(), name="extractor-list"),
+    re_path(r'^v3/compressor/$', views.CompressorAPIView.as_view(), name="compressor-list"),
+    re_path(r'^v3/module/$', views.ModuleAPIView.as_view(), name="module-list"),
 
-    url(r'^v3/', include(router.urls)),
-    url(r'^v3/', include(project_router.urls)),
-    url(r'^v3/', include(malware_router.urls)),
+    re_path(r'^v3/', include(router.urls)),
+    re_path(r'^v3/', include(project_router.urls)),
+    re_path(r'^v3/', include(malware_router.urls)),
 
     # Test Pages
-    url(r'^v3/test/$', views.test, name='test'),
-    url(r'^v3/test-auth/$', views.test_authenticated, name='test-auth'),
+    re_path(r'^v3/test/$', views.test, name='test'),
+    re_path(r'^v3/test-auth/$', views.test_authenticated, name='test-auth'),
 
     # Docs (using Swagger)
-    url(r'^v3/docs/', schema_view, name='api-docs'),
+    re_path(r'^v3/docs/', schema_view, name='api-docs'),
 ]
