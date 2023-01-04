@@ -1,22 +1,22 @@
-Django>=2.2.10,<3.0
+Django==3.0
 django-bootstrap-form
 django-crispy-forms
 django-extensions
 django-favicon
 django-filter
-django-rest-swagger==2.2.0
+django-rest-swagger
 django-sslserver
 django-url-filter
-djangorestframework>=3.9.0
+djangorestframework
 djangorestframework-queryfields
 drf-nested-routers
 whitenoise
 
 # Viper API
-openapi-codec==1.3.2
-itypes==1.1.0
+openapi-codec
+itypes
 
 # Django
-Jinja2>=2.10.1
-MarkupSafe==1.1.1
+Jinja2
+MarkupSafe
 pytz
